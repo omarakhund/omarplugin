@@ -68,6 +68,8 @@ add_action( 'widgets_init', function(){
 
 //Shortcode code starts
 //This shortcode helps users to get in touch with the author faster by clicking on their social media links
+
+//creates a shortcode for facebook
 function facebook_button( $atts ) {
     extract( shortcode_atts(
       array(
@@ -82,7 +84,8 @@ function facebook_button( $atts ) {
   }
   add_shortcode ( 'twitter_button', 'twitter_button');
 
-  function facebook_button( $atts ) {
+  //creates a shortcode for twitter
+  function twitter_button( $atts ) {
     extract( shortcode_atts(
       array(
         'color' => '',
@@ -97,6 +100,7 @@ function facebook_button( $atts ) {
   add_shortcode ( 'twitter_button', 'twitter_button');
 
 
+  //creates a shortcode for linkedin
   function linkedin_button( $atts ) {
     extract( shortcode_atts(
       array(
