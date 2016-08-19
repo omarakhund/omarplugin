@@ -10,50 +10,50 @@ Version: 1.0
 /*
 Omar Akhund - Assignment 2 - 
 Shortcodes and custom post type
-
-echo "# omarplugin" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin https://github.com/omarakhund/omarplugin.git
-git push -u origin master
 */
-//This creates a widget that shows the 6 latest posts from the custom post type 'YouWafflePost'. This code is based from Lab 2.
  
-class ShowCustomPost extends WP_Widget {
- 
-               public function __construct() {
-                              $widget_ops = array(
-                              'classname' => 'widget_postblock',
-                              'description' => __( 'Posts the 6 latest posts in the "You Waffle Posts" post page.') );
-                              parent::__construct('show_custompost', __('Custom Post', 'youwaffle'), $widget_ops);
+//Enqueuing stylesheet to style shortcode
+function styleplugin(){
+	wp_enqueue_style('plugin-style', plugins_url('/css/style.css', __FILE__));
+	}
+add_action( 'wp_enqueue_scripts', 'styleplugin' );
+
+
+
+//Widget code starts
+class omarwidget extends WP_Widget {
+    public function __construct() {
+    $widget_ops    = array(
+    'classname'    => 'widget_postblock',
+    'description'  => __( 'Shows 2 posts from the custom post type:pdf') );
+    parent::__construct('show_custompost', __('Custom Post', 'pdf'), $widget_ops);
                }
- 
-               public function widget ( $args, $instance ) {
- 
+    public function widget ( $args, $instance ) {
     ?>
-<div id="widgetstyle" role="main">
-    <?php
-$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-$wp_query = new WP_Query();
-$wp_query->query('post_type=pdf&posts_per_page=1' . '&paged=' . $paged);
-?>
+  
+  <div id="widgetstyle" role="main">
+    
+  <?php
+  $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+  $wp_query = new WP_Query();
+  $wp_query->query('post_type=pdf&posts_per_page=2' . '&paged=' . $paged);
+  ?>
  
 <?php if ($wp_query->have_posts()) : ?>
  
                <?php while ($wp_query->have_posts()) : $wp_query->the_post(); ?>
  
-                              <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                              <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
-                              <div id="gridlayout">
-                                <?php the_post_thumbnail('thumbnail'); ?></a>
-                                <?php the_title();?>
-                              </div>
-                  </article>
- 
-               <?php endwhile; ?>
-<?php endif; ?>
-    </div>
+                <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+                <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
+        <div id="gridlayout">
+                <?php the_title();?>
+                <?php the_post_thumbnail('medium'); ?></a>
+                </div>
+                </article>
+                
+                <?php endwhile; ?>
+                <?php endif; ?>
+        </div>
     <?php
     
                }
@@ -61,15 +61,58 @@ $wp_query->query('post_type=pdf&posts_per_page=1' . '&paged=' . $paged);
 }
  
 add_action( 'widgets_init', function(){
-     register_widget( 'ShowCustomPost' );
+     register_widget( 'omarwidget' );
 });
 
 
 
+//Shortcode code starts
+//This shortcode helps users to get in touch with the author faster by clicking on their social media links
+function facebook_button( $atts ) {
+    extract( shortcode_atts(
+      array(
+        'color' => '',
+        'button' => '',
+        'title' => 'Facebook',
+        'link'  => 'https://www.facebook.com/',
+      ), $atts )
+    );
+  return '<style> .link_button a {color: ' . $color . ';} .link_button  {background: ' . $button . ';}</style>' .
+  '<span class="individualist_button"><button class="link_button"><a href=" ' . $link . '">' . $title . '</a></button></span>';
+  }
+  add_shortcode ( 'twitter_button', 'twitter_button');
+
+  function facebook_button( $atts ) {
+    extract( shortcode_atts(
+      array(
+        'color' => '',
+        'button' => '',
+        'title' => 'Twitter',
+        'link'  => 'https://www.twitter.com/',
+      ), $atts )
+    );
+  return '<style> .link_button a {color: ' . $color . ';} .link_button  {background: ' . $button . ';}</style>' .
+  '<span class="individualist_button"><button class="link_button"><a href=" ' . $link . '">' . $title . '</a></button></span>';
+  }
+  add_shortcode ( 'twitter_button', 'twitter_button');
+
+
+  function linkedin_button( $atts ) {
+    extract( shortcode_atts(
+      array(
+        'color' => '',
+        'button' => '',
+        'title' => 'LinkedIn',
+        'link'  => 'https://www.linkedin.com/',
+      ), $atts )
+    );
+  return '<style> .link_button a {color: ' . $color . ';} .link_button  {background: ' . $button . ';}</style>' .
+  '<span class="individualist_button"><button class="link_button"><a href=" ' . $link . '">' . $title . '</a></button></span>';
+  }
+  add_shortcode ( 'linked_button', 'linked_button');
 
 
 //custom post type code begins. Code reference: http://www.wpbeginner.com/wp-tutorials/how-to-create-custom-post-types-in-wordpress/
-
 function omar_cpt() {
     register_post_type( 'pdf',
     // CPT Option
@@ -142,6 +185,8 @@ function add_my_post_types_to_query( $query ) {
         $query->set( 'post_type', array( 'post', 'pdf' ) );
     return $query;
 }
-
-
 ?>
+ 
+  
+
+
